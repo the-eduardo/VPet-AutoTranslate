@@ -17,17 +17,17 @@ namespace VPet.Plugin.AutoMTL;
 
 		static TranslatorMananger() {
 			foreach (Type type in Assembly.GetAssembly(typeof(TranslatorBase)).GetTypes()
-				.Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(TranslatorBase)))) {
-				try { // Ingore broken providers
-					string id = (string)type.GetField("providerId", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-					string name = (string)type.GetField("providerName", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-					Dictionary<string, string> langs = (Dictionary<string, string>)type.GetProperty("providedLanguages", BindingFlags.Public | BindingFlags.Static)
-										.GetValue(null);
+				.Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(TranslatorBase))))
+			{
+				// Ingore broken providers
+				string id = (string)type.GetField("providerId", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+				string name = (string)type.GetField("providerName", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+				Dictionary<string, string> langs = (Dictionary<string, string>)type.GetProperty("providedLanguages", BindingFlags.Public | BindingFlags.Static)
+					.GetValue(null);
 
-					translatorClasses[id] = type;
-					translatorNames[id] = name;
-					translatorLangs[id] = langs;
-				} finally { }
+				translatorClasses[id] = type;
+				translatorNames[id] = name;
+				translatorLangs[id] = langs;
 			}
 		}
 

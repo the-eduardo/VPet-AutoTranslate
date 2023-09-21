@@ -72,10 +72,9 @@ namespace VPet.Plugin.AutoMTL;
 		public void clearCache()
 		{
 			translator.ClearCache();
-			foreach (var tmpfile in Directory.GetFiles(GraphCore.CachePath + @"\mtl")) {
-				try {
-					File.Delete(tmpfile);
-				} finally { }
+			foreach (var tmpfile in Directory.GetFiles(GraphCore.CachePath + @"\mtl"))
+			{
+				File.Delete(tmpfile);
 			}
 		}
 
