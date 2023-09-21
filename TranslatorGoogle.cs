@@ -39,7 +39,7 @@ namespace VPet.Plugin.AutoMTL;
                         foreach (JArray item in json[0])
                             output += item[0].Value<string>();
 
-                        if (output == "")
+                        if (string.IsNullOrWhiteSpace(output))
                             return null;
 
                         return output;
