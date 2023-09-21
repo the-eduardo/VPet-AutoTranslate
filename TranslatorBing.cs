@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
 	// Not implemented yet, needs quite a bit more work than the google one
 	// CBA to do it right now
 	/*class TranslatorBing : TranslatorBase
@@ -25,4 +24,4 @@ namespace VPet.Plugin.AutoMTL
 			return null;
 		}
 	}*/
-}
+

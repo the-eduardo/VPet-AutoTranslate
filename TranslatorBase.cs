@@ -8,8 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
 	public abstract class TranslatorBase
 	{
 		// Stuff that needs to be implemented in class that adds a translator
@@ -111,4 +110,4 @@ namespace VPet.Plugin.AutoMTL
 			return output;
 		}
 	}
-}
+

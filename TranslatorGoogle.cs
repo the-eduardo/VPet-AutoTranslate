@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
     class TranslatorGoogle : TranslatorBase
     {
         public static new string providerName = "Google Translate";
@@ -57,4 +56,3 @@ namespace VPet.Plugin.AutoMTL
             }
         }
     }
-}

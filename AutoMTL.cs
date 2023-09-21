@@ -16,8 +16,7 @@ using Newtonsoft.Json.Linq;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
 	public class AutoMTL : MainPlugin
 	{
 		public override string PluginName => "AutoMTL";
@@ -113,4 +112,3 @@ namespace VPet.Plugin.AutoMTL
 			}
 		}
 	}
-}

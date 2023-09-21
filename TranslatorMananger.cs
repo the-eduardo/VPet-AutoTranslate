@@ -5,8 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
 	// This class finds all translation providers at startup and stores them
 	// This allows to easly add translation providers by just adding a class that extends TranslatorBase
 	// And that defines providerId, providerName and ProvidedLangs()
@@ -71,4 +70,4 @@ namespace VPet.Plugin.AutoMTL
 			return (TranslatorBase)Activator.CreateInstance(translatorClasses[id], srcLang, dstLang, cacheBase);
 		}
 	}
-}
+

@@ -7,8 +7,8 @@ using System.Windows;
 using System.Windows.Controls;
 using LinePutScript.Converter;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
+
 	/// <summary>
 	/// SettingsWindow.xaml Logic
 	/// </summary>
@@ -86,4 +86,4 @@ namespace VPet.Plugin.AutoMTL
 			amtl.clearCache();
 		}
 	}
-}
+

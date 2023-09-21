@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LinePutScript.Converter;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
 	public class Setting
 	{
 		/// <summary>
@@ -59,4 +58,3 @@ namespace VPet.Plugin.AutoMTL
 			return trans;
 		}
 	}
-}
