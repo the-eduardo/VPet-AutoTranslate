@@ -5,109 +5,138 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace VPet.Plugin.AutoMTL;
-	public abstract class TranslatorBase
-	{
-		// Stuff that needs to be implemented in class that adds a translator
-		// cf. TranslatorGoogle
-		public static string providerName = "None";
-		public static string providerId = "none";
+namespace VPet.Plugin.AutoMTL
+{
+    public abstract class TranslatorBase
+    {
+        // Constants
+        private const string DefaultProviderName = "None";
+        private const string DefaultProviderId = "none";
+        private const string CacheFileExtension = ".json";
 
-		// Provider needs to implement this function, actually translates a string
-		// This class takes care of all the caching and rate limiting
-		public abstract string TranslateString(string input);
-		// This is the getter that returns all the languages that can be used
-		public static Dictionary<string, string> providedLanguages => null;
+        // Provider-specific properties
+        public static string ProviderName => DefaultProviderName;
+        public static string ProviderId => DefaultProviderId;
+        public static Dictionary<string, string> ProvidedLanguages => null;
 
-		// Other stuff
+        // Other configurable properties
+        public long MsBetweenCalls { get; set; } = 20;
+        public bool TitleCase { get; set; } = true;
 
-		// Can be changed on the fly
-		public long msBetweenCalls;
-		// Can't be changed on the fly, needs to clear cache and restart
-		public bool titleCase;
+        public readonly string SrcLang;
+        public readonly string DstLang;
 
-		public readonly string srcLang;
-		public readonly string dstLang;
+        // Private fields
+        private readonly string _cacheBase;
+        private readonly string _cacheFile;
+        private readonly TextInfo _txtInfo;
+        private readonly Dictionary<string, string> _cache = new Dictionary<string, string>();
+        private long _lastTime;
 
-		// Private stuff
+        protected TranslatorBase(string srcLang, string dstLang, string cacheBase)
+        {
+            _lastTime = 0;
+            SrcLang = srcLang;
+            DstLang = dstLang;
+            _cacheBase = Path.Combine(cacheBase, "mtl");
+            _cacheFile = Path.Combine(_cacheBase, $"{ProviderId}-{SrcLang}-{DstLang}{CacheFileExtension}");
+            _txtInfo = new CultureInfo("en-US", false).TextInfo;
+            InitCache();
+        }
 
-		private readonly string cacheBase;
-		private readonly string cacheFile;
-		private TextInfo txtInfo;
-		private Dictionary<string, string> cache;
-		private long lastTime;
+        private void InitCache()
+        {
+            if (!Directory.Exists(_cacheBase))
+                Directory.CreateDirectory(_cacheBase);
 
-		public TranslatorBase(string srcLang, string dstLang, string cacheBase)
-		{
-			this.lastTime = 0;
-			this.titleCase = true;
-			this.msBetweenCalls = 20;
-			this.srcLang = srcLang;
-			this.dstLang = dstLang;
-			this.cacheBase = cacheBase + @"\mtl";
-			string providerId = TranslatorMananger.GetProviderId(this);
-			this.cacheFile = this.cacheBase + String.Format(@"\{0}-{1}-{2}.json", providerId, srcLang, dstLang);
-			this.txtInfo = new CultureInfo("en-US", false).TextInfo;
-			InitCache();
-		}
+            if (File.Exists(_cacheFile))
+            {
+                try
+                {
+                    using (var reader = new StreamReader(_cacheFile))
+                    {
+                        string json = reader.ReadToEnd();
+                        _cache = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle JSON deserialization exception gracefully
+                    // Log the exception or take appropriate action
+                    Console.WriteLine($"Failed to read cache: {ex.Message}");
+                }
+            }
+        }
 
-		void InitCache()
-		{
-			if (!Directory.Exists(cacheBase))
-				Directory.CreateDirectory(cacheBase);
+        private void SaveCache()
+        {
+            try
+            {
+                using (var writer = new StreamWriter(_cacheFile))
+                {
+                    string json = JsonConvert.SerializeObject(_cache, Formatting.Indented);
+                    writer.Write(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle JSON serialization exception gracefully
+                // Log the exception or take appropriate action
+                Console.WriteLine($"Failed to write cache: {ex.Message}");
+            }
+        }
 
-			if (File.Exists(cacheFile))
-				cache = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(cacheFile));
-			else
-				cache = new Dictionary<string, string>();
-		}
+        public void ClearCache()
+        {
+            _cache.Clear();
+            if (File.Exists(_cacheFile))
+            {
+                try
+                {
+                    File.Delete(_cacheFile);
+                }
+                catch (Exception ex)
+                {
+                    // Handle file deletion exception gracefully
+                    // Log the exception or take appropriate action
+                    Console.WriteLine($"Failed to delete cache: {ex.Message}");
+                }
+            }
+        }
 
-		void SaveCache()
-		{
-			File.WriteAllText(cacheFile, JsonConvert.SerializeObject(cache, Formatting.Indented));
-		}
+        public string Translate(string input)
+        {
+            string output;
 
-		public void ClearCache()
-		{
-			cache.Clear();
-			if (File.Exists(cacheFile))
-				File.Delete(cacheFile);
-		}
+            if (_cache.TryGetValue(input, out string cachedTranslation))
+            {
+                output = cachedTranslation;
+            }
+            else
+            {
+                long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                long timeDiff = currentTime - _lastTime;
 
-		public string Translate(string input)
-		{
-			// Already in cache
-			if (cache.TryGetValue(input, out var translate))
-				return translate;
+                if (timeDiff < MsBetweenCalls)
+                {
+                    Thread.Sleep((int)timeDiff);
+                }
 
-			// Do rate limiting if needed
-			long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-			long timeDiff = currentTime - lastTime;
-			if (timeDiff < msBetweenCalls)
-				Thread.Sleep((int)timeDiff);
-			lastTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                _lastTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                output = TranslateString(input);
 
-			// Run the translator
-			string output = TranslateString(input);
-			if (output == null)
-				return null;
+                output = (output != null && !output.ToLower().Trim().Equals(input.ToLower().Trim())) ? (TitleCase ? _txtInfo.ToTitleCase(output) : output) : null;
 
-			// Check if it's the same as the input (could be same language)
-			if (output.ToLower().Trim() == input.ToLower().Trim())
-				return null;
+                _cache[input] = output;
+                SaveCache();
+            }
 
-			// Format if needed
-			if (titleCase)
-				output = txtInfo.ToTitleCase(output);
+            return output;
+        }
 
-			// Cache the output and return
-			cache[input] = output;
-			// Saving at every change is not great...
-			SaveCache();
-			return output;
-		}
-	}
-
+        // Provider-specific translation logic in derived classes
+        public abstract string TranslateString(string input);
+    }
+}
