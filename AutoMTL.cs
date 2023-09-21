@@ -31,12 +31,10 @@ namespace VPet.Plugin.AutoMTL;
 			// Than the initialisation, so just setup right the hook after construction
 			// Getting the settings seems to work fine...
 			ILine line = MW.Set.FindLine("AutoMTL");
-			if (line == null)
-				settings = new Setting();
-			else
-				settings = LPSConvert.DeserializeObject<Setting>(line);
+			settings = (line == null) ? new Setting() : LPSConvert.DeserializeObject<Setting>(line);
 
 			InitTranslationHook();
+
 			// Try to notify the bindings to get some translation events...
 			// I don't actually know if it does much
 			LocalizeCore.LoadCulture(mainwin.Set.Language);
