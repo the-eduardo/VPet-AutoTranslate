@@ -81,8 +81,8 @@ namespace VPet.Plugin.AutoMTL
 		public string Translate(string input)
 		{
 			// Already in cache
-			if (cache.ContainsKey(input))
-				return cache[input];
+			if (cache.TryGetValue(input, out var translate))
+				return translate;
 
 			// Do rate limiting if needed
 			long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
