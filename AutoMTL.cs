@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -50,11 +50,11 @@ namespace VPet.Plugin.AutoMTL
 			// So just setup the menu item for the settings window here
 			MenuItem modConfig = MW.Main.ToolBar.MenuMODConfig;
 			modConfig.Visibility = Visibility.Visible;
-			MenuItem menuItem = new MenuItem()
-			{
-				Header = "AutoMTL",
-				HorizontalContentAlignment = HorizontalAlignment.Center,
-			};
+			MenuItem menuItem = new()
+{
+    Header = "AutoMTL",
+    HorizontalContentAlignment = HorizontalAlignment.Center,
+};
 			menuItem.Click += (s, e) => { Setting(); };
 			modConfig.Items.Add(menuItem);
 		}
