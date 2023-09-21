@@ -55,11 +55,10 @@ namespace VPet.Plugin.AutoMTL
             {
                 try
                 {
-                    using (var reader = new StreamReader(_cacheFile))
-                    {
+                    using (var reader = new StreamReader(_cacheFile));
                         string json = reader.ReadToEnd();
                         _cache = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                    }
+                   
                 }
                 catch (Exception ex)
                 {
@@ -74,11 +73,10 @@ namespace VPet.Plugin.AutoMTL
         {
             try
             {
-                using (var writer = new StreamWriter(_cacheFile))
-                {
+                using (var writer = new StreamWriter(_cacheFile)) ;
                     string json = JsonConvert.SerializeObject(_cache, Formatting.Indented);
                     writer.Write(json);
-                }
+                
             }
             catch (Exception ex)
             {
