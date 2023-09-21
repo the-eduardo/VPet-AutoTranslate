@@ -7,8 +7,7 @@ using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace VPet.Plugin.AutoMTL
-{
+namespace VPet.Plugin.AutoMTL;
     public abstract class TranslatorBase
     {
         // Constants
@@ -137,4 +136,3 @@ namespace VPet.Plugin.AutoMTL
         // Provider-specific translation logic in derived classes
         public abstract string TranslateString(string input);
     }
-}
