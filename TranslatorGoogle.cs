@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -26,7 +26,7 @@ namespace VPet.Plugin.AutoMTL
             {
                 string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={srcLang}&tl={dstLang}&dt=t&q={Uri.EscapeDataString(input)}";
 
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new())
                 {
                     httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                     HttpResponseMessage response = await httpClient.GetAsync(url);
